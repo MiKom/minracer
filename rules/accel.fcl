@@ -1,0 +1,60 @@
+FUNCTION_BLOCK
+
+VAR_INPUT
+	Speed REAL; (* RANGE(0 .. 320) *)
+	TurnDist REAL; (* RANGE(0 .. 1) *)
+	Radius REAL; (* RANGE(0 .. 200) *)
+END_VAR
+
+VAR_OUTPUT
+	Accel REAL;  (* RANGE(-1 .. 1) *)
+END_VAR
+
+FUZZIFY Speed
+	TERM S_Low    := (0.0, 1) (0.0, 1) (20.0, 1) (150.0, 0);
+	TERM S_High   := (50.0, 0) (200.0, 1) (320, 1) (320, 1);
+END_FUZZIFY
+
+FUZZIFY TurnDist
+	TERM TD_Close := (0.0, 1) (0.0, 1) (0.25, 1) (0.75, 0);
+	TERM TD_Far   := (0.25, 0) (0.75, 1) (1.0, 1) (1.0, 1);
+END_FUZZIFY
+
+FUZZIFY Radius
+	TERM R_Sharp  := (0.0, 1) (0.0, 1) (60.0, 1) (80.0, 0);
+	TERM R_Mild   := (0.0, 0) (80, 1) (130, 0);
+	TERM R_Smooth  := (80, 0) (130, 1) (200, 1) (200, 1);
+END_FUZZIFY
+
+FUZZIFY Accel
+	TERM Brake_F  := -1.0;
+	TERM Brake_H  := (-1.0, 1) (-1.0, 1) (-0.5, 0);
+	TERM Brake_L  := (-1.0, 0) (-0.5, 1) (0.0, 0);
+	TERM Accel_N  := (-0.2, 0) (0.0, 1) (0.2, 0);
+	TERM Accel_L  := (0.0, 0) (0.5, 1) (1.0, 0);
+	TERM Accel_H  := (0.5, 0) (1.0, 1) (1.0, 1);
+	TERM Accel_F  := 1.0;
+END_FUZZIFY
+
+DEFUZZIFY Value
+	METHOD: CoG;
+END_DEFUZZIFY
+
+RULEBLOCK Accel_Rules
+	AND: MIN;
+	ACCU: MAX;
+	RULE 0: IF S_Low AND TD_Close AND R_Sharp THEN Break_L;
+	RULE 1: IF S_Low AND TD_Close AND R_Mild THEN Accel_L;
+	RULE 2: IF S_Low AND TD_Close AND R_Smooth THEN Accel_F;
+	RULE 3: IF S_Low AND TD_Far AND R_Sharp THEN Accel_L;
+	RULE 4: IF S_Low AND TD_Far AND R_Mild THEN Accel_F;
+	RULE 5: IF S_Low AND TD_Far AND R_Smooth THEN Accel_F;
+	RULE 6: IF S_High AND TD_Close AND R_Sharp THEN Brake_H;
+	RULE 7: IF S_High AND TD_Close AND R_Mild THEN Brake_H;
+	RULE 8: IF S_High AND TD_Close AND R_Smooth THEN Accel_F;
+	RULE 9: IF S_High AND TD_Far AND R_Sharp THEN Accel_L;
+	RULE 10: IF S_High AND TD_Far AND R_Mild THEN Accel_L;
+	RULE 11: IF S_High AND TD_Far AND R_Smooth THEN Accel_F;
+END_RULEBLOCK
+	
+END_FUNCTION_BLOCK

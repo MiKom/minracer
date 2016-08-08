@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    file                 : minracer.xml
+    created              : Sat Jan 9 17:56:45 CET 2010
+    copyright            : (C) 2002 MasterM and MiKom
+-->
+
+<!DOCTYPE params SYSTEM "../../libs/tgf/params.dtd">
+<params name="minracer" type="robotdef">
+  <section name="Robots">
+    <section name="index">
+      <section name="1">
+	<attstr name="name" val="minracer"></attstr>
+	<attstr name="desc" val=""></attstr>
+	<attstr name="team" val=""></attstr>
+	<attstr name="author" val="MasterM and MiKom"></attstr>
+	<attstr name="car name" val="car4-trb1"></attstr>
+	<attstr name="category" val="Track-RWD-GrA"></attstr>
+	<attnum name="race number" val="0"></attnum>
+	<attnum name="red" val="1.0"></attnum>
+	<attnum name="green" val="1.0"></attnum>
+	<attnum name="blue" val="1.0"></attnum>
+      </section>
+    </section>
+  </section>
+</params>

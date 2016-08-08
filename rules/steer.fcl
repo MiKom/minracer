@@ -1,0 +1,51 @@
+FUNCTION_BLOCK
+
+VAR_INPUT
+	To_Middle REAL; (* RANGE(-1 .. 1) *)
+	Angle REAL; (* RANGE(-3.15 .. 3.15) *) 
+END_VAR
+
+VAR_OUTPUT
+	Steer REAL; (* RANGE(-1 .. 1) *) 
+END_VAR
+
+FUZZIFY To_Middle
+	TERM TM_Left   := (0.05, 0) (0.8, 1) (1.0, 1);
+	TERM TM_Middle := (-0.2, 0) (-0.05, 1) (0.05, 1) (0.2, 0);
+	TERM TM_Right  := (-1.0, 1) (-0.8, 1) (-0.05, 0);
+END_FUZZIFY
+
+FUZZIFY Angle
+	TERM Angle_Left   := (-3.15, 1) (-0.2618, 1) (0.0, 0);
+	TERM Angle_Middle := (-0.2618, 0) (0.0, 1) (0.2618, 0);
+	TERM Angle_Right  := (0.0, 0) (0.2618, 1) (3.15, 1);
+END_FUZZIFY
+
+FUZZIFY Steer
+	TERM Steer_N  := (-0.1, 0) (0.0, 1) (0.1, 0);
+	TERM Steer_SR := (-0.5, 0) (-0.3, 1) (0.0, 0);
+	TERM Steer_SL := (0.0, 0) (0.3, 1) (0.5, 0);
+	TERM Steer_BR := (-1.0, 1) (-0.8, 1) (-0.3, 0);
+	TERM Steer_BL := (0.3, 0) (0.8, 1) (1.0, 1);
+END_FUZZIFY
+
+DEFUZZIFY Value
+	METHOD: CoG;
+END_DEFUZZIFY
+
+RULEBLOCK Steer_Rules
+	AND:MIN;
+	ACCU:MAX;
+	RULE 0: IF TM_Left AND Angle_Middle THEN Steer_SR;
+	RULE 1: IF TM_Left AND Angle_Left THEN Steer_BR;
+	RULE 2: IF TM_Left AND Angle_Right THEN Steer_SL;
+	RULE 3: IF TM_Middle AND Angle_Middle THEN Steer_N;
+	RULE 4: IF TM_Middle AND Angle_Left THEN Steer_SR;
+	RULE 5: IF TM_Middle AND Angle_Right THEN Steer_SL;
+	RULE 6: IF TM_Right AND Angle_Middle THEN Steer_SL;
+	RULE 7: IF TM_Right AND Angle_Left THEN Steer_SR;
+	RULE 8: IF TM_Right AND Angle_Right THEN Steer_BL;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
+

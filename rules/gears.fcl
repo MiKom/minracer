@@ -1,0 +1,48 @@
+FUNCTION_BLOCK
+
+VAR_INPUT
+	Accel REAL; (* RANGE(-1 .. 1) *)
+	Rpm REAL; (* RANGE(0 .. 1) *)	
+END_VAR
+
+VAR_OUTPUT
+	Gear REAL; (* RANGE(-1 .. 1) *)
+END_VAR
+
+FUZZIFY Accel
+	TERM A_Negative := (-1.0, 1) (-1.0, 1) (0.0, 0);
+	TERM A_Neutral  := (-0.2, 0) (0.0, 1) (0.2, 0);
+	TERM A_Positive := (0.0, 0) (1.0, 1) (1.0, 1);
+END_FUZZIFY
+
+FUZZIFY Rpm
+	TERM R_Low := (0.0, 1) (0.0, 1) (0.25, 1) (0.6, 0);
+	TERM R_Medium := (0.25, 0) (0.6, 1) (1.0, 0);
+	TERM R_High := (0.9, 0) (1.0, 1) (1.0, 1);
+END_FUZZIFY
+
+FUZZIFY Gear
+	TERM G_Down := -1;
+	TERM G_None := 0;
+	TERM G_Up   := 1;
+END_FUZZIFY
+
+DEFUZZIFY Value
+	METHOD: MoM;
+END_DEFUZZIFY
+
+RULEBLOCK Accel_Rules
+	AND: MIN;
+	ACCU: MAX;
+	RULE 0: IF A_Negative AND R_Low THEN G_Down;
+	RULE 1: IF A_Negative AND R_Medium THEN G_None;
+	RULE 2: IF A_Negative AND R_High THEN G_None;
+	RULE 3: IF A_Neutral AND R_Low THEN G_Down;
+	RULE 4: IF A_Neutral AND R_Medium THEN G_None;
+	RULE 5: IF A_Neutral AND R_High THEN G_None;
+	RULE 6: IF A_Positive AND R_Low THEN G_None;
+	RULE 7: IF A_Positive AND R_Medium THEN G_None;
+	RULE 8: IF A_Positive AND R_High THEN G_Up;
+END_RULEBLOCK
+	
+END_FUNCTION_BLOCK

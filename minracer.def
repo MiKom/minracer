@@ -1,0 +1,13 @@
+;
+;   file                 : minracer.def
+;   created              : Sat Jan 9 17:56:45 CET 2010
+;   copyright            : (C) 2002 MasterM and MiKom
+;
+
+LIBRARY	minracer
+
+SECTIONS .data READ WRITE
+
+EXPORTS
+	minracer
+
